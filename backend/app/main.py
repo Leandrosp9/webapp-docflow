@@ -1,12 +1,15 @@
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.errors import AppError, app_error_handler, unexpected_error_handler
 from app.core.logging import configure_logging
+from app.db.session import get_db
 from app.middleware.request_context import RequestContextMiddleware
 
 configure_logging()
@@ -52,6 +55,12 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
 @app.get("/health", tags=["system"])
 def health():
     return {"status": "healthy", "service": "docflow-api"}
+
+
+@app.get("/ready", tags=["system"])
+def readiness(db: Session = Depends(get_db)):
+    db.execute(text("SELECT 1"))
+    return {"status": "ready", "service": "docflow-api"}
 
 
 app.include_router(api_router)

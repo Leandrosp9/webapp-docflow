@@ -2,7 +2,7 @@
 
 ## Fase atual
 
-MVP concluído, validado e preparado para publicação no GitHub.
+MVP concluído e validado; publicação do ambiente público em andamento.
 
 ## Concluído
 
@@ -21,22 +21,28 @@ MVP concluído, validado e preparado para publicação no GitHub.
 - seed idempotente com dados profissionais;
 - testes backend e frontend;
 - Dockerfiles e Docker Compose;
+- healthcheck de processo e readiness do PostgreSQL;
+- projeto `docflow-saas` reservado no Cloudflare Pages;
+- documentação de hospedagem Northflank, Neon, Backblaze B2 e Cloudflare;
 - workflow de CI;
 - README e licença.
 
 ## Pendente
 
-Nenhum item funcional bloqueante dentro do escopo do MVP.
+- autenticar as contas externas no ambiente de automação;
+- provisionar Neon, Backblaze B2 e Northflank;
+- configurar a chave Gemini como segredo protegido;
+- publicar e validar o frontend no Cloudflare Pages.
 
 ## Problemas conhecidos
 
 - funcionalidades de IA retornam `AI_NOT_CONFIGURED` quando `GEMINI_API_KEY` não é fornecida;
-- funcionalidades de hospedagem dependem das contas externas Northflank, Neon, Backblaze B2 e Cloudflare;
+- funcionalidades de hospedagem dependem das contas externas Northflank, Neon e Backblaze B2 autenticadas;
 - não há notificações, SSO, assinatura digital ou DOCX no MVP.
 
 ## Testes
 
-- backend: 13 testes aprovados, cobertura de 84%;
+- backend: 14 testes aprovados, cobertura de 84%;
 - Ruff: aprovado;
 - frontend: 5 testes aprovados;
 - ESLint: aprovado;

@@ -186,6 +186,10 @@ npm run dev
 
 No Linux ou macOS, ative o ambiente virtual com `source .venv/bin/activate` e use os executáveis correspondentes.
 
+## Hospedagem
+
+O ambiente público usa Cloudflare Pages, Northflank, Neon e Backblaze B2. A ordem de provisionamento, as variáveis protegidas e a lista de validação estão em [docs/hospedagem.md](docs/hospedagem.md).
+
 ## Variáveis de ambiente
 
 Copie [`.env.example`](.env.example) para `.env` e substitua apenas valores locais. O arquivo `.env` é ignorado pelo Git.
