@@ -4,7 +4,6 @@ from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, Form, Query, UploadFile, status
 from fastapi.responses import StreamingResponse
-from pypdf import PdfReader
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
@@ -44,6 +43,7 @@ from app.services.documents import (
     update_document,
 )
 from app.services.history import add_history
+from app.services.pdf_text import PDFTextExtractionError, get_pdf_text_extractor
 from app.storage.base import FileStorage
 from app.storage.service import get_storage
 
@@ -169,13 +169,12 @@ def content_for_ai(version: DocumentVersion, storage: FileStorage) -> str:
         raise AppError(422, "CONTENT_UNAVAILABLE", "This version has no content")
     try:
         with storage.open(version.file_path) as stream:
-            reader = PdfReader(stream)
-            content = "\n".join(page.extract_text() or "" for page in reader.pages)
-    except Exception as exc:
-        raise AppError(422, "PDF_TEXT_UNAVAILABLE", "Text could not be extracted from this PDF") from exc
-    if not content.strip():
-        raise AppError(422, "PDF_TEXT_UNAVAILABLE", "This PDF does not contain extractable text")
-    return content[:200_000]
+            result = get_pdf_text_extractor().extract(stream.read())
+    except PDFTextExtractionError as exc:
+        raise AppError(422, exc.code, exc.message) from exc
+    except (FileNotFoundError, OSError) as exc:
+        raise AppError(404, "FILE_NOT_FOUND", "File not found") from exc
+    return result.text[:200_000]
 
 
 @router.get("", response_model=dict)

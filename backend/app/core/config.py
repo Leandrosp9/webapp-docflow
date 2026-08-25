@@ -13,8 +13,21 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173"
     max_upload_mb: int = 10
     upload_dir: str = "uploads"
+    file_storage_provider: str = "local"
+    s3_endpoint_url: str = ""
+    s3_bucket: str = ""
+    s3_region: str = "us-east-1"
+    s3_access_key_id: str = ""
+    s3_secret_access_key: str = ""
+    s3_prefix: str = "docflow"
+    pdf_max_pages: int = 100
+    ocr_enabled: bool = True
+    ocr_languages: str = "por+eng"
+    ocr_dpi: int = 200
+    ocr_min_native_chars: int = 40
+    ocr_max_pages: int = 25
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-2.0-flash"
+    gemini_model: str = "gemini-3.7-flash"
 
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
 

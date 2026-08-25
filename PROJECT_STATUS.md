@@ -14,7 +14,8 @@ MVP concluído, validado e preparado para publicação no GitHub.
 - versionamento imutável;
 - workflow completo de revisão e publicação;
 - comentários e trilha de auditoria;
-- abstração FileStorage com implementação local;
+- abstração FileStorage com implementações local e S3 compatível;
+- OCR híbrido para PDFs digitalizados, com Tesseract em português e inglês;
 - abstração de IA com provider Gemini;
 - dashboard, documentos, detalhe, criação, edição, histórico, comparação e usuários;
 - seed idempotente com dados profissionais;
@@ -30,13 +31,12 @@ Nenhum item funcional bloqueante dentro do escopo do MVP.
 ## Problemas conhecidos
 
 - funcionalidades de IA retornam `AI_NOT_CONFIGURED` quando `GEMINI_API_KEY` não é fornecida;
-- PDFs digitalizados sem camada de texto podem ser visualizados, mas não analisados pela IA;
-- armazenamento local é intencional para desenvolvimento e demonstração;
+- funcionalidades de hospedagem dependem das contas externas Northflank, Neon, Backblaze B2 e Cloudflare;
 - não há notificações, SSO, assinatura digital ou DOCX no MVP.
 
 ## Testes
 
-- backend: 9 testes aprovados, cobertura de 84%;
+- backend: 13 testes aprovados, cobertura de 84%;
 - Ruff: aprovado;
 - frontend: 5 testes aprovados;
 - ESLint: aprovado;
@@ -46,6 +46,7 @@ Nenhum item funcional bloqueante dentro do escopo do MVP.
 - migrations: upgrade, check e downgrade aprovados em SQLite; `head` e `check` aprovados no PostgreSQL;
 - Playwright: 3 de 3 fluxos aprovados no ambiente Docker;
 - Docker Compose: frontend, backend e PostgreSQL saudáveis;
+- OCR real no container: PDF sem camada textual reconhecido com `por+eng`;
 - segurança do repositório: nenhum secret real, arquivo `.env` ou chave privada encontrado.
 
 ## Credenciais de demonstração

@@ -46,6 +46,8 @@ As transições de estado, permissões e fronteiras entre empresas são validada
 - isolamento multi-tenant derivado do usuário autenticado;
 - documentos de texto criados dentro da plataforma;
 - upload, visualização e download autenticado de PDF;
+- OCR híbrido em português e inglês para PDFs digitalizados;
+- armazenamento local em desenvolvimento e objeto privado compatível com S3 em produção;
 - versões imutáveis com resumo das alterações;
 - fluxo de revisão com transições de estado validadas;
 - comentários durante a revisão;
@@ -64,7 +66,7 @@ A integração usa o Gemini em nuvem por meio de uma abstração no backend. A c
 2. **Gerar resumo com IA:** cria um resumo curto e objetivo da versão escolhida.
 3. **Comparar versões com IA:** explica adições, remoções, mudanças e impacto provável.
 
-A comparação textual simples é sempre calculada localmente pela aplicação. A IA apenas explica diferenças já verificáveis. Sem `GEMINI_API_KEY`, o restante do MVP continua funcionando e as rotas de IA retornam um erro controlado.
+A comparação textual simples é sempre calculada localmente pela aplicação. A IA apenas explica diferenças já verificáveis. PDFs com texto usam extração nativa; páginas digitalizadas recorrem ao Tesseract somente quando necessário. Sem `GEMINI_API_KEY`, o restante do MVP continua funcionando e as rotas de IA retornam um erro controlado.
 
 ## Fluxo de aprovação
 
@@ -82,7 +84,7 @@ Operações inválidas retornam erro `409` e não alteram o documento.
 
 **Frontend:** React, Vite, JavaScript, Tailwind CSS, Lucide React, React Router, TanStack Query, React Hook Form, Zod e Framer Motion.
 
-**Backend:** Python, FastAPI, SQLAlchemy 2, Pydantic, Alembic e PostgreSQL.
+**Backend:** Python, FastAPI, SQLAlchemy 2, Pydantic, Alembic, PostgreSQL, PyMuPDF, Tesseract OCR e armazenamento S3 compatível.
 
 **Qualidade e infraestrutura:** Pytest, Vitest, React Testing Library, Playwright, Ruff, ESLint, Prettier, Docker Compose e GitHub Actions.
 
@@ -98,7 +100,8 @@ backend (FastAPI)
   ├── autenticação e RBAC
   ├── serviços de domínio e workflow
   ├── repositórios com filtro de tenant
-  ├── FileStorage → armazenamento local
+  ├── FileStorage → local ou objeto privado S3/B2/R2
+  ├── extração PDF → texto nativo + OCR seletivo
   └── AIService → Gemini API
         │
         ▼
@@ -197,6 +200,18 @@ Copie [`.env.example`](.env.example) para `.env` e substitua apenas valores loca
 | `GEMINI_MODEL` | modelo Gemini usado pelo provider |
 | `CORS_ORIGINS` | origens autorizadas, separadas por vírgula |
 | `MAX_UPLOAD_MB` | limite de PDF |
+| `FILE_STORAGE_PROVIDER` | `local`, `s3`, `b2` ou `r2` |
+| `S3_ENDPOINT_URL` | endpoint do armazenamento compatível com S3 |
+| `S3_BUCKET` | bucket privado de PDFs |
+| `S3_REGION` | região do bucket |
+| `S3_ACCESS_KEY_ID` | identificador da credencial do bucket |
+| `S3_SECRET_ACCESS_KEY` | segredo da credencial do bucket |
+| `S3_PREFIX` | prefixo isolado dos objetos do DocFlow |
+| `PDF_MAX_PAGES` | máximo de páginas aceitas pela extração textual |
+| `OCR_ENABLED` | habilita OCR seletivo em PDFs digitalizados |
+| `OCR_LANGUAGES` | idiomas do Tesseract, por padrão `por+eng` |
+| `OCR_DPI` | resolução usada no OCR |
+| `OCR_MAX_PAGES` | máximo de páginas processadas por OCR em uma requisição |
 | `VITE_API_URL` | base pública da API usada pelo frontend |
 | `BACKEND_PORT` | porta local exposta pela API no Compose |
 | `FRONTEND_PORT` | porta local exposta pelo frontend no Compose |
@@ -231,6 +246,8 @@ Os testes backend cobrem autenticação, RBAC, isolamento de tenant, CRUD, vers�
 - consultas de documento sempre limitadas pela empresa autenticada;
 - `company_id` nunca é aceito dos schemas públicos;
 - validação de MIME, assinatura `%PDF-` e limite de tamanho;
+- limites independentes de páginas e páginas processadas por OCR;
+- bucket privado e criptografia do lado do servidor no armazenamento S3 compatível;
 - download de arquivo exige autenticação e acesso ao tenant;
 - CORS configurável;
 - erros padronizados com request ID;
