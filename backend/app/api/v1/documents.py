@@ -1,4 +1,6 @@
+import re
 from io import BytesIO
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, Form, Query, UploadFile, status
 from fastapi.responses import StreamingResponse
@@ -47,6 +49,12 @@ from app.storage.service import get_storage
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 ai_router = APIRouter(prefix="/ai", tags=["ai"])
+
+
+def safe_pdf_name(filename: str | None) -> str:
+    basename = Path(filename or "document.pdf").name
+    cleaned = re.sub(r"[^A-Za-z0-9._ -]", "_", basename).strip(". ")[:200]
+    return cleaned if cleaned.lower().endswith(".pdf") else "document.pdf"
 
 
 def version_schema(version: DocumentVersion) -> VersionRead:
@@ -297,8 +305,9 @@ async def create_pdf_document(
     )
     document = create_document(db, payload, user)
     current = document.versions[0]
-    current.file_path = storage.save(BytesIO(data), file.filename or "document.pdf")
-    current.original_filename = file.filename or "document.pdf"
+    filename = safe_pdf_name(file.filename)
+    current.file_path = storage.save(BytesIO(data), filename)
+    current.original_filename = filename
     current.mime_type = "application/pdf"
     current.file_size = len(data)
     db.commit()
@@ -351,7 +360,7 @@ async def create_pdf_version(
     data = await file.read(settings.max_upload_mb * 1024 * 1024 + 1)
     validate_pdf(data, file.content_type)
     version = save_pdf_version(
-        db, document, user, data, file.filename or "document.pdf", change_summary, storage
+        db, document, user, data, safe_pdf_name(file.filename), change_summary, storage
     )
     return version_schema(version)
 
