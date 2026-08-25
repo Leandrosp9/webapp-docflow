@@ -1,5 +1,6 @@
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = "-q --disable-warnings"
 
 [tool.ruff]
@@ -8,9 +9,8 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
-ignore = ["B008"]
+ignore = ["B008", "E501"]
 
 [tool.coverage.run]
 source = ["app"]
 omit = ["app/db/seed.py"]
-

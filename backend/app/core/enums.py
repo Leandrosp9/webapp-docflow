@@ -1,0 +1,32 @@
+from enum import StrEnum
+
+
+class UserRole(StrEnum):
+    ADMIN = "ADMIN"
+    COLLABORATOR = "COLLABORATOR"
+
+
+class DocumentStatus(StrEnum):
+    DRAFT = "DRAFT"
+    IN_REVIEW = "IN_REVIEW"
+    CHANGES_REQUESTED = "CHANGES_REQUESTED"
+    APPROVED = "APPROVED"
+    PUBLISHED = "PUBLISHED"
+    ARCHIVED = "ARCHIVED"
+
+
+class DocumentType(StrEnum):
+    TEXT = "TEXT"
+    PDF = "PDF"
+
+
+class HistoryAction(StrEnum):
+    DOCUMENT_CREATED = "DOCUMENT_CREATED"
+    VERSION_CREATED = "VERSION_CREATED"
+    SENT_TO_REVIEW = "SENT_TO_REVIEW"
+    COMMENT_ADDED = "COMMENT_ADDED"
+    CHANGES_REQUESTED = "CHANGES_REQUESTED"
+    APPROVED = "APPROVED"
+    PUBLISHED = "PUBLISHED"
+    ARCHIVED = "ARCHIVED"
+
