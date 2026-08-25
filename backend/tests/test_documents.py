@@ -108,11 +108,12 @@ def test_pdf_upload_validation_and_download(client, admin_headers, seeded):
             "category": "Compliance",
             "assigned_reviewer_id": seeded["collaborator"].id,
         },
-        files={"file": ("contract.pdf", minimal_pdf, "application/pdf")},
+        files={"file": ("../contract.pdf", minimal_pdf, "application/pdf")},
         headers=admin_headers,
     )
     assert created.status_code == 201, created.text
     document = created.json()
+    assert document["versions"][0]["original_filename"] == "contract.pdf"
     version_id = document["versions"][0]["id"]
     downloaded = client.get(
         f"/api/v1/documents/{document['id']}/versions/{version_id}/file",

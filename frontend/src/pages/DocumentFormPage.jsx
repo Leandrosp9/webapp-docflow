@@ -133,6 +133,7 @@ export function DocumentFormPage() {
     onSuccess: (document) => {
       queryClient.invalidateQueries({ queryKey: ['documents'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      queryClient.removeQueries({ queryKey: ['document', document.id] })
       toast(editing ? 'Documento e versão atualizados.' : 'Documento criado como rascunho.')
       navigate(`/documents/${document.id}`)
     },
