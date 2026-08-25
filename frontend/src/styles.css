@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-line;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply m-0 min-w-[320px] bg-ink font-sans text-slate-100 antialiased;
+    background-image:
+      radial-gradient(circle at 82% 2%, rgba(124, 108, 255, 0.12), transparent 32rem),
+      radial-gradient(circle at 3% 75%, rgba(54, 200, 244, 0.06), transparent 30rem);
+  }
+
+  ::selection {
+    @apply bg-accent/40 text-white;
+  }
+
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-white/[0.07] bg-panel/85 shadow-[0_14px_45px_-28px_rgba(0,0,0,0.8)] backdrop-blur;
+  }
+
+  .button {
+    @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition duration-200 disabled:cursor-not-allowed disabled:opacity-45;
+  }
+
+  .button-primary {
+    @apply button bg-gradient-to-r from-accent to-indigo-500 text-white shadow-glow hover:-translate-y-0.5 hover:brightness-110;
+  }
+
+  .button-secondary {
+    @apply button border border-white/10 bg-white/[0.045] text-slate-200 hover:border-white/20 hover:bg-white/[0.075];
+  }
+
+  .button-danger {
+    @apply button border border-rose-400/20 bg-rose-400/10 text-rose-200 hover:bg-rose-400/20;
+  }
+
+  .input {
+    @apply min-h-11 w-full rounded-xl border border-white/[0.09] bg-[#0b0f18] px-3.5 text-sm text-white placeholder:text-slate-600 transition hover:border-white/[0.16] focus:border-accent/70;
+  }
+
+  .label {
+    @apply mb-2 block text-sm font-medium text-slate-300;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-accent;
+  }
+
+  .page-title {
+    @apply font-['Manrope'] text-2xl font-bold tracking-[-0.03em] text-white sm:text-3xl;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 99px;
+  background: #303747;
+}
