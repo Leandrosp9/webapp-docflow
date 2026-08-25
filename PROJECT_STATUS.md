@@ -22,7 +22,7 @@ MVP concluído e validado; publicação do ambiente público em andamento.
 - testes backend e frontend;
 - Dockerfiles e Docker Compose;
 - healthcheck de processo e readiness do PostgreSQL;
-- projeto `docflow` reservado no Cloudflare Pages;
+- projeto `docflow-saas` reservado no Cloudflare Pages;
 - documentação de hospedagem Northflank, Neon, Backblaze B2 e Cloudflare;
 - workflow de CI;
 - README e licença.

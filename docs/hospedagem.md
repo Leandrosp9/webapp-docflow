@@ -39,7 +39,7 @@ Variáveis de runtime:
 ENVIRONMENT=production
 DATABASE_URL=postgresql+psycopg://<usuario>:<senha>@<host>/<banco>?sslmode=require
 JWT_SECRET=<segredo-aleatorio-com-no-minimo-32-caracteres>
-CORS_ORIGINS=https://docflow-451.pages.dev
+CORS_ORIGINS=https://docflow-saas.pages.dev
 FILE_STORAGE_PROVIDER=b2
 S3_ENDPOINT_URL=https://s3.<regiao>.backblazeb2.com
 S3_BUCKET=<bucket-privado>
@@ -70,7 +70,7 @@ Os valores entre `<...>` são placeholders. Nenhum segredo deve ser salvo neste 
 
 ## Cloudflare Pages
 
-O projeto reservado é `docflow`, com endereço `https://docflow-451.pages.dev`.
+O projeto público é `docflow-saas`, com endereço `https://docflow-saas.pages.dev`. O nome curto `docflow.pages.dev` já pertence a outro projeto no namespace global do Cloudflare.
 
 Publicação direta após a API estar disponível:
 
@@ -79,7 +79,7 @@ cd frontend
 $env:VITE_API_URL = "https://<api-publica>/api/v1"
 npm ci
 npm run build
-npx --yes wrangler@latest pages deploy dist --project-name docflow --branch main
+npx --yes wrangler@latest pages deploy dist --project-name docflow-saas --branch main
 ```
 
 O arquivo `frontend/public/_redirects` garante que URLs como `/documents` e `/history` carreguem diretamente no Pages.
