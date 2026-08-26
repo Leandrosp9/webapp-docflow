@@ -52,6 +52,7 @@ def test_user_name_rejects_whitespace(client, admin_headers):
         json={
             "name": "   ",
             "email": "sem-nome@docflow.demo",
+            "cpf": "529.982.247-25",
             "password": "SecurePassword2026!",
             "role": "COLLABORATOR",
         },

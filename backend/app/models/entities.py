@@ -27,12 +27,16 @@ class Company(Base):
 
 class User(Base):
     __tablename__ = "users"
-    __table_args__ = (UniqueConstraint("company_id", "email", name="uq_user_company_email"),)
+    __table_args__ = (
+        UniqueConstraint("company_id", "email", name="uq_user_company_email"),
+        UniqueConstraint("company_id", "cpf", name="uq_user_company_cpf"),
+    )
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
     company_id: Mapped[str] = mapped_column(ForeignKey("companies.id", ondelete="CASCADE"), index=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+    cpf: Mapped[str | None] = mapped_column(String(11), nullable=True)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str] = mapped_column(String(20), default=UserRole.COLLABORATOR.value)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
