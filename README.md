@@ -135,6 +135,12 @@ As capturas acima foram geradas automaticamente a partir do ambiente Docker vali
 
 ## Demonstração
 
+Ambiente público:
+
+- aplicação: [https://docflow-saas.pages.dev](https://docflow-saas.pages.dev)
+- API: [https://http--api--52lxxtkxp7c5.code.run](https://http--api--52lxxtkxp7c5.code.run)
+- Swagger: [https://http--api--52lxxtkxp7c5.code.run/docs](https://http--api--52lxxtkxp7c5.code.run/docs)
+
 Empresa: **NovaTech Solutions**
 
 | Perfil | E-mail | Senha |
@@ -142,7 +148,7 @@ Empresa: **NovaTech Solutions**
 | Administrador | `admin@docflow.demo` | `DocFlowDemo2026!` |
 | Colaborador | `collaborator@docflow.demo` | `DocFlowDemo2026!` |
 
-O seed inclui seis documentos profissionais em diferentes estados, versões e eventos de histórico.
+O seed inclui seis documentos profissionais em diferentes estados, versões e eventos de histórico. A demonstração pública usa Neon, armazenamento privado Backblaze B2 e Gemini 3.6 Flash no backend.
 
 ## Executando localmente
 
@@ -188,7 +194,7 @@ No Linux ou macOS, ative o ambiente virtual com `source .venv/bin/activate` e us
 
 ## Hospedagem
 
-O ambiente público usa Cloudflare Pages, Northflank, Neon e Backblaze B2. A ordem de provisionamento, as variáveis protegidas e a lista de validação estão em [docs/hospedagem.md](docs/hospedagem.md).
+O ambiente público usa Cloudflare Pages, Northflank, Neon e Backblaze B2. A ordem de provisionamento, as variáveis protegidas, as limitações do sandbox e a lista de validação estão em [docs/hospedagem.md](docs/hospedagem.md).
 
 ## Variáveis de ambiente
 

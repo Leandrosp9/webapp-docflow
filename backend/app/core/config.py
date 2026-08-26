@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     ocr_min_native_chars: int = 40
     ocr_max_pages: int = 25
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-3.7-flash"
+    gemini_model: str = "gemini-3.6-flash"
 
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
 
