@@ -204,6 +204,7 @@ Copie [`.env.example`](.env.example) para `.env` e substitua apenas valores loca
 | --- | --- |
 | `DATABASE_URL` | conexão SQLAlchemy com PostgreSQL |
 | `JWT_SECRET` | assinatura dos access tokens |
+| `API_DOCS_ENABLED` | habilita ou desabilita o Swagger em `/docs` |
 | `ACCESS_TOKEN_MINUTES` | duração do access token |
 | `REFRESH_TOKEN_DAYS` | duração do refresh token |
 | `GEMINI_API_KEY` | chave opcional da API Gemini |
@@ -247,7 +248,7 @@ npm run build
 npm run e2e
 ```
 
-Os testes backend cobrem autenticação, RBAC, isolamento de tenant, CRUD, versões, workflow, transição inválida, comentários, histórico, IA mockada e upload. Os testes frontend cobrem login, listagem, detalhe e ações de revisão. O Playwright valida três fluxos sequenciais completos.
+Os testes backend cobrem autenticação, RBAC, isolamento de tenant em todas as rotas de documento, CRUD, versões, workflow, transição inválida, comentários, histórico, IA mockada, upload e falhas de armazenamento. Os testes frontend cobrem login, listagem, detalhe, formulários, renovação de sessão em arquivos e ações de revisão. O Playwright valida três fluxos sequenciais completos e todas as páginas em desktop, tablet e mobile.
 
 ## Segurança
 

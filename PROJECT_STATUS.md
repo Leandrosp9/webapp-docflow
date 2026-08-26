@@ -2,7 +2,7 @@
 
 ## Fase atual
 
-MVP concluído, publicado e validado no ambiente público.
+MVP concluído, publicado e auditado funcional e visualmente.
 
 ## Concluído
 
@@ -30,6 +30,8 @@ MVP concluído, publicado e validado no ambiente público.
 - OCR validado em produção com PDF sem camada textual;
 - documentação de hospedagem Northflank, Neon, Backblaze B2 e Cloudflare;
 - workflow de CI;
+- auditoria de QA com regressão funcional e responsiva em desktop, tablet e mobile;
+- listagem adaptativa com tabela no desktop e cards informativos em telas menores;
 - README e licença.
 
 ## Pendente
@@ -48,17 +50,19 @@ MVP concluído, publicado e validado no ambiente público.
 
 ## Testes
 
-- backend: 14 testes aprovados, cobertura de 84%;
+- backend: 20 testes aprovados, cobertura de 86%;
 - Ruff: aprovado;
-- frontend: 5 testes aprovados;
+- frontend: 8 testes aprovados;
 - ESLint: aprovado;
 - Prettier: aprovado;
 - build de produção: aprovado;
 - npm audit: zero vulnerabilidades;
 - migrations: upgrade, check e downgrade aprovados em SQLite; `head` e `check` aprovados no PostgreSQL;
-- Playwright: 3 de 3 fluxos aprovados no ambiente Docker e novamente no ambiente público;
+- Playwright: 6 testes aprovados no ambiente Docker — 3 fluxos completos e 3 matrizes responsivas;
 - Docker Compose: frontend, backend e PostgreSQL saudáveis;
-- OCR real no container: PDF sem camada textual reconhecido com `por+eng`;
+- OCR real no container: PDF sem camada textual reconhecido com `por+eng` em 1 de 1 página;
+- seed: idempotência confirmada após duas execuções consecutivas;
+- Alembic: banco no `head` e nenhuma operação de upgrade pendente;
 - produção: login ADMIN e COLLABORATOR, healthchecks, workflow completo, histórico, B2, OCR e três ações Gemini aprovados;
 - segurança do repositório: nenhum secret real, arquivo `.env` ou chave privada encontrado.
 
