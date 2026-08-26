@@ -2,7 +2,7 @@
 
 ## Fase atual
 
-MVP concluído e validado; publicação do ambiente público em andamento.
+MVP concluído, publicado e validado no ambiente público.
 
 ## Concluído
 
@@ -22,22 +22,28 @@ MVP concluído e validado; publicação do ambiente público em andamento.
 - testes backend e frontend;
 - Dockerfiles e Docker Compose;
 - healthcheck de processo e readiness do PostgreSQL;
-- projeto `docflow-saas` reservado no Cloudflare Pages;
+- frontend publicado no projeto `docflow-saas` do Cloudflare Pages;
+- API publicada no serviço `api` da Northflank, com liveness e readiness;
+- PostgreSQL Neon conectado com TLS e migrations aplicadas;
+- bucket privado Backblaze B2 validado por upload e download autenticado;
+- Gemini 3.6 Flash validado nas três funcionalidades de IA;
+- OCR validado em produção com PDF sem camada textual;
 - documentação de hospedagem Northflank, Neon, Backblaze B2 e Cloudflare;
 - workflow de CI;
 - README e licença.
 
 ## Pendente
 
-- autenticar as contas externas no ambiente de automação;
-- provisionar Neon, Backblaze B2 e Northflank;
-- configurar a chave Gemini como segredo protegido;
-- publicar e validar o frontend no Cloudflare Pages.
+- nenhuma pendência funcional do MVP;
+- domínio personalizado e recursos do roadmap permanecem como evoluções futuras, sem implementação neste escopo.
 
 ## Problemas conhecidos
 
-- funcionalidades de IA retornam `AI_NOT_CONFIGURED` quando `GEMINI_API_KEY` não é fornecida;
-- funcionalidades de hospedagem dependem das contas externas Northflank, Neon e Backblaze B2 autenticadas;
+- o Developer Sandbox da Northflank possui 512 MB de memória e capacidade limitada durante rollouts;
+- a conexão Neon usa o pooler com IPv4 explícito porque o sandbox não alcança o endereço IPv6; uma troca dos IPs do pooler exige atualizar `DATABASE_URL`;
+- a disponibilidade e as cotas do Gemini dependem do nível gratuito do provedor;
+- OCR aceita no máximo 25 páginas digitalizadas por requisição e PDFs de até 100 páginas;
+- o ambiente público ainda não possui domínio personalizado;
 - não há notificações, SSO, assinatura digital ou DOCX no MVP.
 
 ## Testes
@@ -50,9 +56,10 @@ MVP concluído e validado; publicação do ambiente público em andamento.
 - build de produção: aprovado;
 - npm audit: zero vulnerabilidades;
 - migrations: upgrade, check e downgrade aprovados em SQLite; `head` e `check` aprovados no PostgreSQL;
-- Playwright: 3 de 3 fluxos aprovados no ambiente Docker;
+- Playwright: 3 de 3 fluxos aprovados no ambiente Docker e novamente no ambiente público;
 - Docker Compose: frontend, backend e PostgreSQL saudáveis;
 - OCR real no container: PDF sem camada textual reconhecido com `por+eng`;
+- produção: login ADMIN e COLLABORATOR, healthchecks, workflow completo, histórico, B2, OCR e três ações Gemini aprovados;
 - segurança do repositório: nenhum secret real, arquivo `.env` ou chave privada encontrado.
 
 ## Credenciais de demonstração
@@ -76,3 +83,9 @@ docker compose up --build
 - aplicação: http://localhost:5173
 - API: http://localhost:8000
 - Swagger: http://localhost:8000/docs
+
+Ambiente público:
+
+- aplicação: https://docflow-saas.pages.dev
+- API: https://http--api--52lxxtkxp7c5.code.run
+- Swagger: https://http--api--52lxxtkxp7c5.code.run/docs
