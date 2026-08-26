@@ -185,15 +185,15 @@ def seed() -> None:
                     )
                 )
             events = [
-                (HistoryAction.DOCUMENT_CREATED.value, author.id, "created the document"),
-                (HistoryAction.VERSION_CREATED.value, author.id, "published version v1.0"),
+                (HistoryAction.DOCUMENT_CREATED.value, author.id, "criou o documento"),
+                (HistoryAction.VERSION_CREATED.value, author.id, "criou a versão v1.0"),
             ]
             if data["status"] != DocumentStatus.DRAFT.value:
                 events.append(
                     (
                         HistoryAction.SENT_TO_REVIEW.value,
                         author.id,
-                        f"sent the document to {assigned.name} for review",
+                        f"enviou o documento para revisão de {assigned.name}",
                     )
                 )
             if data["status"] == DocumentStatus.CHANGES_REQUESTED.value:
@@ -201,20 +201,20 @@ def seed() -> None:
                     (
                         HistoryAction.CHANGES_REQUESTED.value,
                         assigned.id,
-                        "requested clearer ownership and completion deadlines",
+                        "solicitou responsáveis e prazos de conclusão mais claros",
                     )
                 )
             if len(data["versions"]) > 1:
                 events.append(
-                    (HistoryAction.VERSION_CREATED.value, author.id, "published version v1.1")
+                    (HistoryAction.VERSION_CREATED.value, author.id, "criou a versão v1.1")
                 )
             if data["status"] in {DocumentStatus.APPROVED.value, DocumentStatus.PUBLISHED.value}:
                 events.append(
-                    (HistoryAction.APPROVED.value, assigned.id, "approved the document")
+                    (HistoryAction.APPROVED.value, assigned.id, "aprovou o documento")
                 )
             if data["status"] == DocumentStatus.PUBLISHED.value:
                 events.append(
-                    (HistoryAction.PUBLISHED.value, admin.id, "published the document")
+                    (HistoryAction.PUBLISHED.value, admin.id, "publicou o documento")
                 )
             for event_index, (action, user_id, details) in enumerate(events):
                 db.add(

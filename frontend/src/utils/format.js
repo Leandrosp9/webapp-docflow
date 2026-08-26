@@ -18,6 +18,27 @@ export const ACTIONS = {
   ARCHIVED: 'arquivou o documento',
 }
 
+const LEGACY_DETAILS = {
+  'created the document': '',
+  'approved the document': '',
+  'published the document': '',
+  'added a review comment': '',
+  'requested clearer ownership and completion deadlines':
+    'solicitou responsáveis e prazos de conclusão mais claros',
+}
+
+export function formatHistoryDetails(action, details = '') {
+  if (!details || details === ACTIONS[action]) return ''
+  if (details in LEGACY_DETAILS) return LEGACY_DETAILS[details]
+  const version = details.match(/^published version (v\d+\.\d+)$/)
+  if (version) return `criou a versão ${version[1]}`
+  const reviewer = details.match(/^sent the document to (.+) for review$/)
+  if (reviewer) return `enviou o documento para revisão de ${reviewer[1]}`
+  const changes = details.match(/^requested changes: (.+)$/)
+  if (changes) return `solicitou ajustes: ${changes[1]}`
+  return details
+}
+
 export function formatDate(value, withTime = false) {
   if (!value) return '—'
   return new Intl.DateTimeFormat('pt-BR', {

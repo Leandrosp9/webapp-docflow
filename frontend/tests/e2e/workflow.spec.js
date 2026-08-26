@@ -32,7 +32,7 @@ test.describe.serial('DocFlow approval lifecycle', () => {
     await login(page, 'collaborator@docflow.demo')
     await page.getByRole('link', { name: 'Documentos' }).click()
     await page.getByPlaceholder('Buscar por título…').fill(title)
-    await page.getByText(title).first().click()
+    await page.getByRole('link').filter({ hasText: title }).first().click()
     await page.getByRole('button', { name: 'Solicitar ajustes' }).click()
     await page
       .getByLabel('Orientação para o autor')
@@ -45,7 +45,7 @@ test.describe.serial('DocFlow approval lifecycle', () => {
     await login(page, 'admin@docflow.demo')
     await page.getByRole('link', { name: 'Documentos' }).click()
     await page.getByPlaceholder('Buscar por título…').fill(title)
-    await page.getByText(title).first().click()
+    await page.getByRole('link').filter({ hasText: title }).first().click()
     await page.getByRole('link', { name: 'Editar' }).click()
     await page
       .locator('#content')
