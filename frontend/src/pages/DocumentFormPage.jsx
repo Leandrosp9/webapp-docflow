@@ -9,6 +9,7 @@ import { ErrorState } from '../components/ErrorState'
 import { PageHeader } from '../components/PageHeader'
 import { PageSkeleton } from '../components/Loading'
 import { useToast } from '../components/Toast'
+import { VoiceTranscriber } from '../components/VoiceTranscriber'
 import { api } from '../services/api'
 
 const baseSchema = z.object({
@@ -54,6 +55,8 @@ export function DocumentFormPage() {
     handleSubmit,
     watch,
     reset,
+    getValues,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(formSchema(editing)),
@@ -199,11 +202,13 @@ export function DocumentFormPage() {
               </label>
               <select id="reviewer" className="input" {...register('assigned_reviewer_id')}>
                 <option value="">Selecionar depois</option>
-                {usersQuery.data?.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name}
-                  </option>
-                ))}
+                {usersQuery.data
+                  ?.filter((user) => user.is_active)
+                  .map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.name}
+                    </option>
+                  ))}
               </select>
             </div>
             <div className="sm:col-span-2">
@@ -263,6 +268,15 @@ export function DocumentFormPage() {
                 {errors.content && (
                   <p className="mt-1.5 text-xs text-rose-300">{errors.content.message}</p>
                 )}
+                <VoiceTranscriber
+                  onInsert={(text) => {
+                    const current = getValues('content')?.trim()
+                    setValue('content', current ? `${current}\n\n${text}` : text, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }}
+                />
               </>
             ) : (
               <>
