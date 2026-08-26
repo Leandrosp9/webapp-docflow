@@ -33,7 +33,9 @@ def get_document_or_404(db: Session, document_id: str, user: User) -> Document:
     return document
 
 
-def create_document(db: Session, payload: DocumentCreate, user: User) -> Document:
+def create_document(
+    db: Session, payload: DocumentCreate, user: User, *, commit: bool = True
+) -> Document:
     reviewer = ensure_reviewer(db, payload.assigned_reviewer_id, user)
     document = Document(
         company_id=user.company_id,
@@ -56,9 +58,11 @@ def create_document(db: Session, payload: DocumentCreate, user: User) -> Documen
         change_summary=payload.change_summary,
     )
     db.add(version)
-    add_history(db, document.id, user.id, HistoryAction.DOCUMENT_CREATED, "created the document")
-    add_history(db, document.id, user.id, HistoryAction.VERSION_CREATED, "published version v1.0")
-    db.commit()
+    add_history(db, document.id, user.id, HistoryAction.DOCUMENT_CREATED, "criou o documento")
+    add_history(db, document.id, user.id, HistoryAction.VERSION_CREATED, "criou a versão v1.0")
+    db.flush()
+    if commit:
+        db.commit()
     return get_document_or_404(db, document.id, user)
 
 
@@ -102,7 +106,7 @@ def add_text_version(
     document.current_version = number
     db.add(version)
     db.flush()
-    add_history(db, document.id, user.id, HistoryAction.VERSION_CREATED, f"published version {version.label}")
+    add_history(db, document.id, user.id, HistoryAction.VERSION_CREATED, f"criou a versão {version.label}")
     db.commit()
     db.refresh(version)
     return version
@@ -125,7 +129,7 @@ def send_to_review(db: Session, document: Document, user: User) -> None:
         document.id,
         user.id,
         HistoryAction.SENT_TO_REVIEW,
-        f"sent the document to {reviewer_name} for review",
+        f"enviou o documento para revisão de {reviewer_name}",
     )
     db.commit()
 
@@ -141,13 +145,13 @@ def review_document(
     if normalized == "APPROVE":
         document.status = DocumentStatus.APPROVED.value
         action = HistoryAction.APPROVED
-        details = "approved the document"
+        details = "aprovou o documento"
     elif normalized == "REQUEST_CHANGES":
         if not (comment or "").strip():
             raise AppError(422, "COMMENT_REQUIRED", "Explain the requested changes")
         document.status = DocumentStatus.CHANGES_REQUESTED.value
         action = HistoryAction.CHANGES_REQUESTED
-        details = f"requested changes: {comment.strip()}"
+        details = f"solicitou ajustes: {comment.strip()}"
     else:
         raise AppError(422, "INVALID_DECISION", "Decision must be APPROVE or REQUEST_CHANGES")
     add_history(db, document.id, user.id, action, details)
@@ -160,7 +164,7 @@ def publish_document(db: Session, document: Document, user: User) -> None:
     if document.status != DocumentStatus.APPROVED.value:
         raise AppError(409, "INVALID_STATE_TRANSITION", "Only approved documents can be published")
     document.status = DocumentStatus.PUBLISHED.value
-    add_history(db, document.id, user.id, HistoryAction.PUBLISHED, "published the document")
+    add_history(db, document.id, user.id, HistoryAction.PUBLISHED, "publicou o documento")
     db.commit()
 
 
@@ -170,7 +174,7 @@ def archive_document(db: Session, document: Document, user: User) -> None:
     if document.status == DocumentStatus.ARCHIVED.value:
         raise AppError(409, "INVALID_STATE_TRANSITION", "Document is already archived")
     document.status = DocumentStatus.ARCHIVED.value
-    add_history(db, document.id, user.id, HistoryAction.ARCHIVED, "archived the document")
+    add_history(db, document.id, user.id, HistoryAction.ARCHIVED, "arquivou o documento")
     db.commit()
 
 

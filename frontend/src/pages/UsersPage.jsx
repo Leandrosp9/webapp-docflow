@@ -16,7 +16,7 @@ import { api } from '../services/api'
 import { formatDate } from '../utils/format'
 
 const schema = z.object({
-  name: z.string().min(2, 'Informe o nome completo.'),
+  name: z.string().trim().min(2, 'Informe o nome completo.'),
   email: z.string().email('Informe um e-mail válido.'),
   password: z.string().min(8, 'Use ao menos 8 caracteres.'),
   role: z.enum(['ADMIN', 'COLLABORATOR']),

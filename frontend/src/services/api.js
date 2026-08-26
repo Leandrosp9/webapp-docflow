@@ -65,11 +65,18 @@ export async function api(path, options = {}, retry = true) {
   return response.json()
 }
 
-export async function authenticatedBlob(path) {
+export async function authenticatedBlob(path, retry = true) {
   const session = getSession()
   const response = await fetch(`${API_URL}${path}`, {
     headers: { Authorization: `Bearer ${session?.access_token}` },
   })
+  if (response.status === 401 && retry && session?.refresh_token) {
+    refreshing ||= refreshSession().finally(() => {
+      refreshing = null
+    })
+    await refreshing
+    return authenticatedBlob(path, false)
+  }
   if (!response.ok) throw new Error('Não foi possível abrir o arquivo.')
   return response.blob()
 }

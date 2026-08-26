@@ -57,18 +57,59 @@ def test_tenant_isolation_returns_not_found(client, db, seeded, admin_headers):
     )
     db.add(foreign)
     db.flush()
-    db.add(
-        DocumentVersion(
-            document_id=foreign.id,
-            version_number=1,
-            content="Confidential foreign tenant content",
-            created_by=seeded["other_admin"].id,
-            change_summary="Initial version",
-        )
+    version = DocumentVersion(
+        document_id=foreign.id,
+        version_number=1,
+        content="Confidential foreign tenant content",
+        created_by=seeded["other_admin"].id,
+        change_summary="Initial version",
     )
+    db.add(version)
     db.commit()
 
     response = client.get(f"/api/v1/documents/{foreign.id}", headers=admin_headers)
     assert response.status_code == 404
     listing = client.get("/api/v1/documents", headers=admin_headers).json()
     assert all(item["id"] != foreign.id for item in listing["items"])
+
+    requests = [
+        ("get", f"/api/v1/documents/{foreign.id}/comments", None),
+        ("get", f"/api/v1/documents/{foreign.id}/history", None),
+        ("post", f"/api/v1/documents/{foreign.id}/submit", None),
+        (
+            "post",
+            f"/api/v1/documents/{foreign.id}/versions",
+            {"content": "Tentativa de invasão", "change_summary": "Versão indevida"},
+        ),
+        (
+            "post",
+            f"/api/v1/documents/{foreign.id}/compare",
+            {
+                "from_version_id": version.id,
+                "to_version_id": version.id,
+                "explain_with_ai": False,
+            },
+        ),
+        ("get", f"/api/v1/documents/{foreign.id}/versions/{version.id}/file", None),
+    ]
+    for method, path, payload in requests:
+        result = client.request(method, path, json=payload, headers=admin_headers)
+        assert result.status_code == 404, f"{method.upper()} {path}: {result.text}"
+
+
+def test_reviewer_must_belong_to_authenticated_tenant(client, admin_headers, seeded):
+    response = client.post(
+        "/api/v1/documents",
+        json={
+            "title": "Documento com revisor externo",
+            "description": "A atribuição deve ser rejeitada.",
+            "category": "Compliance",
+            "document_type": "TEXT",
+            "content": "Conteúdo interno.",
+            "assigned_reviewer_id": seeded["other_admin"].id,
+            "change_summary": "Versão inicial",
+        },
+        headers=admin_headers,
+    )
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "INVALID_REVIEWER"

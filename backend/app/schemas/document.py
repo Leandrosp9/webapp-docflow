@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.core.enums import DocumentType
 from app.schemas.common import UserBrief
@@ -15,6 +15,19 @@ class DocumentCreate(BaseModel):
     assigned_reviewer_id: str | None = None
     change_summary: str = Field(default="Initial version", max_length=500)
 
+    @field_validator("title", "category", "change_summary", mode="before")
+    @classmethod
+    def strip_required_text(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Field cannot be blank")
+        return value
+
+    @field_validator("description", mode="before")
+    @classmethod
+    def strip_description(cls, value: str) -> str:
+        return value.strip()
+
     @model_validator(mode="after")
     def text_requires_content(self):
         if self.document_type == DocumentType.TEXT and not (self.content or "").strip():
@@ -28,10 +41,40 @@ class DocumentUpdate(BaseModel):
     category: str | None = Field(default=None, min_length=2, max_length=100)
     assigned_reviewer_id: str | None = None
 
+    @field_validator("title", "category", mode="before")
+    @classmethod
+    def strip_required_text(cls, value: str | None) -> str | None:
+        if value is None:
+            return value
+        value = value.strip()
+        if not value:
+            raise ValueError("Field cannot be blank")
+        return value
+
+    @field_validator("description", mode="before")
+    @classmethod
+    def strip_description(cls, value: str | None) -> str | None:
+        return value.strip() if value is not None else None
+
 
 class VersionCreate(BaseModel):
     content: str = Field(min_length=1, max_length=200_000)
     change_summary: str = Field(min_length=3, max_length=500)
+
+    @field_validator("content")
+    @classmethod
+    def reject_blank_content(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Field cannot be blank")
+        return value
+
+    @field_validator("change_summary", mode="before")
+    @classmethod
+    def strip_change_summary(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Field cannot be blank")
+        return value
 
 
 class VersionRead(BaseModel):
@@ -79,6 +122,14 @@ class ReviewRequest(BaseModel):
 
 class CommentCreate(BaseModel):
     message: str = Field(min_length=1, max_length=3000)
+
+    @field_validator("message", mode="before")
+    @classmethod
+    def strip_message(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Comment cannot be blank")
+        return value
 
 
 class CommentRead(BaseModel):

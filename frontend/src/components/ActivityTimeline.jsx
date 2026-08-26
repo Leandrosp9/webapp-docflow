@@ -1,5 +1,5 @@
 import { Check, FileClock, MessageSquareText, Send, Upload, XCircle } from 'lucide-react'
-import { ACTIONS, formatDate } from '../utils/format'
+import { ACTIONS, formatDate, formatHistoryDetails } from '../utils/format'
 import { Avatar } from './Avatar'
 
 const iconByAction = {
@@ -18,6 +18,7 @@ export function ActivityTimeline({ items, compact = false }) {
       {items.map((item, index) => {
         const Icon = iconByAction[item.action] || FileClock
         const userName = item.user?.name || item.user_name
+        const details = formatHistoryDetails(item.action, item.details)
         return (
           <div key={item.id} className="relative flex gap-3 pb-5 last:pb-0">
             {index !== items.length - 1 && (
@@ -35,8 +36,8 @@ export function ActivityTimeline({ items, compact = false }) {
               {item.document_title && (
                 <p className="mt-1 truncate text-xs text-slate-400">{item.document_title}</p>
               )}
-              {item.details && item.details !== ACTIONS[item.action] && !compact && (
-                <p className="mt-1.5 text-xs leading-5 text-slate-500">{item.details}</p>
+              {details && !compact && (
+                <p className="mt-1.5 text-xs leading-5 text-slate-500">{details}</p>
               )}
               <time className="mt-1 block text-[11px] text-slate-600">
                 {formatDate(item.created_at, true)}

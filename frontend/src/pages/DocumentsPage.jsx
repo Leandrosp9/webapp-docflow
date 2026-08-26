@@ -43,8 +43,8 @@ export function DocumentsPage() {
         }
       />
       <div className="card mb-4 p-4">
-        <div className="grid gap-3 md:grid-cols-[minmax(220px,1fr)_180px_180px_190px_auto]">
-          <label className="relative">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_180px_180px_190px_auto]">
+          <label className="relative md:col-span-2 xl:col-span-1">
             <span className="sr-only">Buscar por título</span>
             <Search
               size={15}
