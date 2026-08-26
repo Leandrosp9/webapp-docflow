@@ -1,3 +1,4 @@
+import logging
 import re
 from io import BytesIO
 from pathlib import Path
@@ -49,6 +50,7 @@ from app.storage.service import get_storage
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 ai_router = APIRouter(prefix="/ai", tags=["ai"])
+logger = logging.getLogger("docflow.storage")
 
 
 def safe_pdf_name(filename: str | None) -> str:
@@ -142,23 +144,43 @@ def save_pdf_version(
     if not can_edit(document, user):
         raise AppError(409, "VERSION_NOT_ALLOWED", "A new version is not allowed in this state")
     number = document.current_version + 1
-    path = storage.save(BytesIO(data), filename)
-    version = DocumentVersion(
-        document_id=document.id,
-        version_number=number,
-        file_path=path,
-        original_filename=filename,
-        mime_type="application/pdf",
-        file_size=len(data),
-        created_by=user.id,
-        change_summary=change_summary,
-    )
-    document.current_version = number
-    db.add(version)
-    db.flush()
-    add_history(db, document.id, user.id, HistoryAction.VERSION_CREATED, f"published version {version.label}")
-    db.commit()
-    db.refresh(version)
+    stored_path = None
+    try:
+        stored_path = storage.save(BytesIO(data), filename)
+        version = DocumentVersion(
+            document_id=document.id,
+            version_number=number,
+            file_path=stored_path,
+            original_filename=filename,
+            mime_type="application/pdf",
+            file_size=len(data),
+            created_by=user.id,
+            change_summary=change_summary,
+        )
+        document.current_version = number
+        db.add(version)
+        db.flush()
+        add_history(
+            db,
+            document.id,
+            user.id,
+            HistoryAction.VERSION_CREATED,
+            f"criou a versão {version.label}",
+        )
+        db.commit()
+        db.refresh(version)
+    except Exception as exc:
+        db.rollback()
+        if stored_path:
+            try:
+                storage.delete(stored_path)
+            except Exception:
+                logger.warning(
+                    "orphan_file_cleanup_failed",
+                    extra={"document_id": document.id},
+                    exc_info=True,
+                )
+        raise AppError(503, "FILE_STORAGE_UNAVAILABLE", "File storage is unavailable") from exc
     return version
 
 
@@ -302,14 +324,29 @@ async def create_pdf_document(
         assigned_reviewer_id=assigned_reviewer_id or None,
         change_summary=change_summary,
     )
-    document = create_document(db, payload, user)
+    document = create_document(db, payload, user, commit=False)
     current = document.versions[0]
     filename = safe_pdf_name(file.filename)
-    current.file_path = storage.save(BytesIO(data), filename)
-    current.original_filename = filename
-    current.mime_type = "application/pdf"
-    current.file_size = len(data)
-    db.commit()
+    stored_path = None
+    try:
+        stored_path = storage.save(BytesIO(data), filename)
+        current.file_path = stored_path
+        current.original_filename = filename
+        current.mime_type = "application/pdf"
+        current.file_size = len(data)
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        if stored_path:
+            try:
+                storage.delete(stored_path)
+            except Exception:
+                logger.warning(
+                    "orphan_file_cleanup_failed",
+                    extra={"document_id": document.id},
+                    exc_info=True,
+                )
+        raise AppError(503, "FILE_STORAGE_UNAVAILABLE", "File storage is unavailable") from exc
     return detail_item(get_document_or_404(db, document.id, user), user)
 
 
@@ -358,6 +395,9 @@ async def create_pdf_version(
         raise AppError(422, "INVALID_DOCUMENT_TYPE", "This document requires a text version")
     data = await file.read(settings.max_upload_mb * 1024 * 1024 + 1)
     validate_pdf(data, file.content_type)
+    change_summary = change_summary.strip()
+    if len(change_summary) < 3:
+        raise AppError(422, "VALIDATION_ERROR", "Change summary must have at least 3 characters")
     version = save_pdf_version(
         db, document, user, data, safe_pdf_name(file.filename), change_summary, storage
     )
@@ -462,7 +502,7 @@ def add_comment(
     comment = Comment(document_id=document.id, user_id=user.id, message=payload.message.strip())
     db.add(comment)
     db.flush()
-    add_history(db, document.id, user.id, HistoryAction.COMMENT_ADDED, "added a review comment")
+    add_history(db, document.id, user.id, HistoryAction.COMMENT_ADDED, "adicionou um comentário")
     db.commit()
     db.refresh(comment)
     return CommentRead(

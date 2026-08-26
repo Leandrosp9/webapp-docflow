@@ -18,7 +18,7 @@ app = FastAPI(
     title="DocFlow API",
     description="Multi-tenant document approval and versioning API",
     version="1.0.0",
-    docs_url="/docs" if settings.environment != "production" else None,
+    docs_url="/docs" if settings.api_docs_enabled else None,
     redoc_url=None,
 )
 app.add_middleware(

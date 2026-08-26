@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from app.core.enums import UserRole
 
@@ -10,6 +10,14 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
     role: UserRole = UserRole.COLLABORATOR
+
+    @field_validator("name", mode="before")
+    @classmethod
+    def strip_name(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Name cannot be blank")
+        return value
 
 
 class UserRead(BaseModel):
@@ -21,4 +29,3 @@ class UserRead(BaseModel):
     role: str
     is_active: bool
     created_at: datetime
-

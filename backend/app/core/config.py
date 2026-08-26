@@ -6,6 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     app_name: str = "DocFlow API"
     environment: str = "development"
+    api_docs_enabled: bool = True
     database_url: str = "sqlite:///./docflow.db"
     jwt_secret: str = "development-only-secret-change-before-production"
     access_token_minutes: int = 15

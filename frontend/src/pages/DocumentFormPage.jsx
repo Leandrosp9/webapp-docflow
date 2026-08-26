@@ -12,13 +12,13 @@ import { useToast } from '../components/Toast'
 import { api } from '../services/api'
 
 const baseSchema = z.object({
-  title: z.string().min(3, 'Informe um título com ao menos 3 caracteres.'),
-  description: z.string().max(3000),
-  category: z.string().min(2, 'Selecione uma categoria.'),
+  title: z.string().trim().min(3, 'Informe um título com ao menos 3 caracteres.'),
+  description: z.string().trim().max(3000),
+  category: z.string().trim().min(2, 'Selecione uma categoria.'),
   document_type: z.enum(['TEXT', 'PDF']),
   content: z.string().optional(),
   assigned_reviewer_id: z.string().optional(),
-  change_summary: z.string().min(3, 'Descreva esta versão.'),
+  change_summary: z.string().trim().min(3, 'Descreva esta versão.'),
   file: z.any().optional(),
 })
 
