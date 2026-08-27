@@ -43,6 +43,7 @@ As transições de estado, permissões e fronteiras entre empresas são validada
 
 - autenticação com access token, refresh token e logout;
 - perfis `ADMIN` e `COLLABORATOR` com RBAC no backend;
+- gestão de usuários com CPF validado, troca de senha, ativação, inativação e exclusão segura;
 - isolamento multi-tenant derivado do usuário autenticado;
 - documentos de texto criados dentro da plataforma;
 - upload, visualização e download autenticado de PDF;
@@ -65,8 +66,9 @@ A integração usa o Gemini em nuvem por meio de uma abstração no backend. A c
 1. **Revisar com IA:** aponta problemas, trechos confusos, sugestões e riscos de ambiguidade sem alterar o documento.
 2. **Gerar resumo com IA:** cria um resumo curto e objetivo da versão escolhida.
 3. **Comparar versões com IA:** explica adições, remoções, mudanças e impacto provável.
+4. **Ditado com IA:** grava até cinco minutos, transcreve o áudio e corrige o texto em português antes de o usuário decidir inseri-lo no documento.
 
-A comparação textual simples é sempre calculada localmente pela aplicação. A IA apenas explica diferenças já verificáveis. PDFs com texto usam extração nativa; páginas digitalizadas recorrem ao Tesseract somente quando necessário. Sem `GEMINI_API_KEY`, o restante do MVP continua funcionando e as rotas de IA retornam um erro controlado.
+A comparação textual simples é sempre calculada localmente pela aplicação. A IA apenas explica diferenças já verificáveis. PDFs com texto usam extração nativa; páginas digitalizadas recorrem ao Tesseract somente quando necessário. Áudios do navegador são normalizados temporariamente pelo FFmpeg e enviados diretamente ao Gemini, sem armazenamento. Sem `GEMINI_API_KEY`, o restante do MVP continua funcionando e as rotas de IA retornam um erro controlado.
 
 ## Fluxo de aprovação
 
@@ -211,6 +213,8 @@ Copie [`.env.example`](.env.example) para `.env` e substitua apenas valores loca
 | `GEMINI_MODEL` | modelo Gemini usado pelo provider |
 | `CORS_ORIGINS` | origens autorizadas, separadas por vírgula |
 | `MAX_UPLOAD_MB` | limite de PDF |
+| `MAX_AUDIO_MB` | limite do áudio enviado para transcrição |
+| `MAX_AUDIO_SECONDS` | duração máxima do ditado em segundos |
 | `FILE_STORAGE_PROVIDER` | `local`, `s3`, `b2` ou `r2` |
 | `S3_ENDPOINT_URL` | endpoint do armazenamento compatível com S3 |
 | `S3_BUCKET` | bucket privado de PDFs |
@@ -248,16 +252,20 @@ npm run build
 npm run e2e
 ```
 
-Os testes backend cobrem autenticação, RBAC, isolamento de tenant em todas as rotas de documento, CRUD, versões, workflow, transição inválida, comentários, histórico, IA mockada, upload e falhas de armazenamento. Os testes frontend cobrem login, listagem, detalhe, formulários, renovação de sessão em arquivos e ações de revisão. O Playwright valida três fluxos sequenciais completos e todas as páginas em desktop, tablet e mobile.
+Os testes backend cobrem autenticação, RBAC, isolamento de tenant em todas as rotas de documento e usuário, CRUD, gestão de usuários, CPF, troca e revogação de credenciais, versões, workflow, transição inválida, comentários, histórico, IA mockada, transcrição, upload e falhas de armazenamento. Os testes frontend cobrem login, listagem, detalhe, formulários, usuários, ditado, renovação de sessão em arquivos e ações de revisão. O Playwright valida três fluxos documentais sequenciais, o ciclo completo de um usuário e todas as páginas em desktop, tablet e mobile.
 
 ## Segurança
 
 - senhas protegidas com Argon2;
+- CPF normalizado, validado e isolado por empresa;
+- exclusão de usuário bloqueada quando há vínculo com documentos ou auditoria;
+- inativação revoga refresh tokens e bloqueia imediatamente os access tokens ativos;
 - tokens de refresh armazenados apenas como hash;
 - consultas de documento sempre limitadas pela empresa autenticada;
 - `company_id` nunca é aceito dos schemas públicos;
 - validação de MIME, assinatura `%PDF-` e limite de tamanho;
 - limites independentes de páginas e páginas processadas por OCR;
+- validação de formato, tamanho e duração de áudio antes da transcrição;
 - bucket privado e criptografia do lado do servidor no armazenamento S3 compatível;
 - download de arquivo exige autenticação e acesso ao tenant;
 - CORS configurável;

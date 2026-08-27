@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-const title = 'Plano de Continuidade Operacional E2E'
+const title = `Plano de Continuidade Operacional E2E ${Date.now()}`
 const password = 'DocFlowDemo2026!'
 
 async function login(page, email) {

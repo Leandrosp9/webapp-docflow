@@ -108,7 +108,7 @@ export function DashboardPage() {
           </div>
           <DocumentTable documents={data.recent_documents} compact />
         </div>
-        <div className="card p-5">
+        <div className="card min-w-0 p-5">
           <div className="mb-6 flex items-center gap-3">
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-cyan-400/10 text-cyan-300">
               <Sparkles size={16} />
@@ -138,7 +138,7 @@ export function DashboardPage() {
         </div>
       </section>
       <section className="mt-5 grid gap-5 lg:grid-cols-2">
-        <div className="card p-5">
+        <div className="card min-w-0 p-5">
           <h2 className="mb-5 text-sm font-semibold text-white">Pendentes para minha revisão</h2>
           {data.pending_reviews.length ? (
             <DocumentTable documents={data.pending_reviews} compact />
@@ -149,7 +149,7 @@ export function DashboardPage() {
             />
           )}
         </div>
-        <div className="card p-5">
+        <div className="card min-w-0 p-5">
           <h2 className="mb-5 text-sm font-semibold text-white">Atividades recentes</h2>
           {data.recent_activity.length ? (
             <ActivityTimeline items={data.recent_activity} compact />
