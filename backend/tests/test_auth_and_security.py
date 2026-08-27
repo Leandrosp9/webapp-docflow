@@ -38,6 +38,7 @@ def test_rbac_blocks_collaborator_from_creating_user(client, collaborator_header
         json={
             "name": "Carla Dias",
             "email": "carla@docflow.demo",
+            "cpf": "529.982.247-25",
             "password": "SecurePassword2026!",
             "role": "COLLABORATOR",
         },

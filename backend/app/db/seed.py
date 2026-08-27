@@ -107,18 +107,21 @@ DOCUMENTS = [
 ]
 
 
-def get_or_create_user(db, company, name, email, role):
+def get_or_create_user(db, company, name, email, cpf, role):
     user = db.scalar(select(User).where(User.email == email))
     if not user:
         user = User(
             company_id=company.id,
             name=name,
             email=email,
+            cpf=cpf,
             password_hash=hash_password(DEMO_PASSWORD),
             role=role,
         )
         db.add(user)
         db.flush()
+    elif not user.cpf:
+        user.cpf = cpf
     return user
 
 
@@ -132,20 +135,36 @@ def seed() -> None:
             db.flush()
 
         admin = get_or_create_user(
-            db, company, "Ana Ribeiro", "admin@docflow.demo", UserRole.ADMIN.value
+            db,
+            company,
+            "Ana Ribeiro",
+            "admin@docflow.demo",
+            "90000000175",
+            UserRole.ADMIN.value,
         )
         collaborator = get_or_create_user(
             db,
             company,
             "Bruno Costa",
             "collaborator@docflow.demo",
+            "90000000256",
             UserRole.COLLABORATOR.value,
         )
         reviewer = get_or_create_user(
-            db, company, "Camila Mendes", "camila@docflow.demo", UserRole.COLLABORATOR.value
+            db,
+            company,
+            "Camila Mendes",
+            "camila@docflow.demo",
+            "90000000337",
+            UserRole.COLLABORATOR.value,
         )
         get_or_create_user(
-            db, company, "Diego Rocha", "diego@docflow.demo", UserRole.COLLABORATOR.value
+            db,
+            company,
+            "Diego Rocha",
+            "diego@docflow.demo",
+            "90000000418",
+            UserRole.COLLABORATOR.value,
         )
 
         base_time = datetime.now(UTC) - timedelta(days=8)

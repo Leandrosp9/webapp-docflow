@@ -70,6 +70,16 @@ for (const viewport of viewports) {
           page.getByRole('link').filter({ hasText: 'Política de Segurança da Informação' }).first(),
         ).toBeVisible()
       }
+      if (route === '/documents/new') {
+        await expect(page.getByRole('button', { name: 'Gravar mensagem' })).toBeVisible()
+      }
+      if (route === '/users') {
+        await page.getByRole('button', { name: 'Cadastrar usuário' }).click()
+        await expect(page.getByLabel('CPF')).toBeVisible()
+        await expect(page.getByLabel('Repetir senha')).toBeVisible()
+        await expectNoPageOverflow(page, `${viewport.name}${route}/modal`)
+        await page.getByLabel('Fechar').click()
+      }
       await expectNoPageOverflow(page, `${viewport.name}${route}`)
       if (process.env.QA_SCREENSHOTS === '1' && route === '/documents') {
         await page.screenshot({ path: testInfo.outputPath('documentos.png'), fullPage: true })

@@ -31,6 +31,7 @@ from app.schemas.document import (
     VersionCreate,
     VersionRead,
 )
+from app.services.audio import AudioProcessingError, AudioTranscoder, get_audio_transcoder
 from app.services.documents import (
     add_text_version,
     archive_document,
@@ -51,6 +52,18 @@ from app.storage.service import get_storage
 router = APIRouter(prefix="/documents", tags=["documents"])
 ai_router = APIRouter(prefix="/ai", tags=["ai"])
 logger = logging.getLogger("docflow.storage")
+
+ALLOWED_AUDIO_TYPES = {
+    "audio/aac",
+    "audio/flac",
+    "audio/mp3",
+    "audio/mp4",
+    "audio/mpeg",
+    "audio/ogg",
+    "audio/wav",
+    "audio/webm",
+    "audio/x-wav",
+}
 
 
 def safe_pdf_name(filename: str | None) -> str:
@@ -580,6 +593,34 @@ def selected_version(document: Document, version_id: str | None) -> DocumentVers
     if not version:
         raise AppError(404, "VERSION_NOT_FOUND", "Version not found")
     return version
+
+
+@ai_router.post("/transcribe-audio", response_model=dict)
+async def transcribe_audio(
+    audio: UploadFile = File(),
+    user: User = Depends(get_current_user),
+    ai: AIService = Depends(get_ai_service),
+    transcoder: AudioTranscoder = Depends(get_audio_transcoder),
+):
+    del user  # Authentication is required even though transcription has no tenant data.
+    mime_type = (audio.content_type or "").split(";", maxsplit=1)[0].lower()
+    if mime_type not in ALLOWED_AUDIO_TYPES:
+        raise AppError(422, "INVALID_AUDIO_TYPE", "Unsupported audio format")
+
+    data = await audio.read(settings.max_audio_mb * 1024 * 1024 + 1)
+    if not data:
+        raise AppError(422, "EMPTY_AUDIO", "The audio file is empty")
+    if len(data) > settings.max_audio_mb * 1024 * 1024:
+        raise AppError(
+            413,
+            "AUDIO_TOO_LARGE",
+            f"Audio must be at most {settings.max_audio_mb} MB",
+        )
+    try:
+        normalized_audio = transcoder.to_wav(data)
+    except AudioProcessingError as exc:
+        raise AppError(422, "INVALID_AUDIO", str(exc)) from exc
+    return {"text": ai.transcribe(normalized_audio, "audio/wav")}
 
 
 @ai_router.post("/documents/{document_id}/review", response_model=dict)

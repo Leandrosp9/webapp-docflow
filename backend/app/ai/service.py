@@ -2,6 +2,7 @@ from functools import lru_cache
 
 from app.ai.base import AIProvider
 from app.ai.providers.gemini import GeminiProvider
+from app.core.errors import AppError
 
 
 class AIService:
@@ -29,6 +30,19 @@ class AIService:
             f"on the supplied text and diff.\n\nTitle: {title}\n\nOLD:\n{old}\n\nNEW:\n{new}"
             f"\n\nDIFF:\n{formatted_diff}"
         )
+
+    def transcribe(self, audio: bytes, mime_type: str) -> str:
+        result = self.provider.generate_with_audio(
+            "Transcreva este áudio em português do Brasil. Corrija pontuação, concordância e "
+            "pequenos vícios de fala, preservando rigorosamente o significado e os fatos ditos. "
+            "Não acrescente informações, comentários, título, Markdown ou aspas. Retorne somente "
+            "o texto final corrigido.",
+            audio,
+            mime_type,
+        ).strip()
+        if not result:
+            raise AppError(502, "EMPTY_TRANSCRIPTION", "Gemini returned an empty transcription")
+        return result
 
 
 @lru_cache

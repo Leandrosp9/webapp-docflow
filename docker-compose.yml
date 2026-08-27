@@ -29,6 +29,8 @@ services:
       GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.6-flash}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:8080}
       MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-10}
+      MAX_AUDIO_MB: ${MAX_AUDIO_MB:-10}
+      MAX_AUDIO_SECONDS: ${MAX_AUDIO_SECONDS:-300}
       FILE_STORAGE_PROVIDER: ${FILE_STORAGE_PROVIDER:-local}
       S3_ENDPOINT_URL: ${S3_ENDPOINT_URL:-}
       S3_BUCKET: ${S3_BUCKET:-}

@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     refresh_token_days: int = 7
     cors_origins: str = "http://localhost:5173"
     max_upload_mb: int = 10
+    max_audio_mb: int = 10
+    max_audio_seconds: int = 300
     upload_dir: str = "uploads"
     file_storage_provider: str = "local"
     s3_endpoint_url: str = ""
