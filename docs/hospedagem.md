@@ -2,13 +2,13 @@
 
 O ambiente de portfólio segue a mesma composição usada no Workflix:
 
-| Componente | Provedor | Configuração |
-| --- | --- | --- |
-| Frontend React | Cloudflare Pages | site estático com fallback para rotas SPA |
-| API FastAPI | Northflank | imagem criada a partir de `backend/Dockerfile` |
-| PostgreSQL | Neon | banco gerenciado com TLS obrigatório |
-| PDFs | Backblaze B2 | bucket privado pela API compatível com S3 |
-| IA | Google Gemini | chave protegida somente no backend |
+| Componente     | Provedor         | Configuração                                   |
+| -------------- | ---------------- | ---------------------------------------------- |
+| Frontend React | Cloudflare Pages | site estático com fallback para rotas SPA      |
+| API FastAPI    | Northflank       | imagem criada a partir de `backend/Dockerfile` |
+| PostgreSQL     | Neon             | banco gerenciado com TLS obrigatório           |
+| PDFs           | Backblaze B2     | bucket privado pela API compatível com S3      |
+| IA             | Google Gemini    | chave protegida somente no backend             |
 
 ## Ordem de publicação
 
@@ -57,6 +57,8 @@ OCR_DPI=200
 OCR_MAX_PAGES=25
 PDF_MAX_PAGES=100
 MAX_UPLOAD_MB=10
+MAX_AUDIO_MB=10
+MAX_AUDIO_SECONDS=300
 ```
 
 Os valores entre `<...>` são placeholders. Nenhum segredo deve ser salvo neste arquivo, no README ou em variáveis públicas do frontend.
@@ -102,6 +104,8 @@ URLs publicadas:
 - [x] upload e download autenticado usam o bucket B2;
 - [x] um PDF digitalizado sem texto nativo é reconhecido pelo OCR;
 - [x] revisão, resumo e comparação Gemini respondem sem expor a chave;
+- [x] ditado envia áudio temporário, transcreve e corrige o texto com Gemini;
+- [x] criação, edição, troca de senha, inativação, reativação e exclusão segura de usuários;
 - [x] comparação textual funciona independentemente da IA;
 - [x] isolamento multi-tenant e histórico permanecem válidos;
 - [x] rotas SPA abertas diretamente retornam a aplicação, não `404`;

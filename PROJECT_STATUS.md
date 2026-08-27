@@ -28,7 +28,7 @@ MVP concluído, publicado e auditado funcional e visualmente.
 - API publicada no serviço `api` da Northflank, com liveness e readiness;
 - PostgreSQL Neon conectado com TLS e migrations aplicadas;
 - bucket privado Backblaze B2 validado por upload e download autenticado;
-- Gemini 3.6 Flash validado nas funcionalidades de IA já publicadas; a transcrição de áudio foi validada com mock e conversão real local;
+- Gemini 3.6 Flash validado nas funcionalidades de IA publicadas, inclusive a transcrição de áudio real em produção;
 - OCR validado em produção com PDF sem camada textual;
 - documentação de hospedagem Northflank, Neon, Backblaze B2 e Cloudflare;
 - workflow de CI;
@@ -65,7 +65,7 @@ MVP concluído, publicado e auditado funcional e visualmente.
 - OCR real no container: PDF sem camada textual reconhecido com `por+eng` em 1 de 1 página;
 - seed: idempotência confirmada após duas execuções consecutivas;
 - Alembic: banco no `head` e nenhuma operação de upgrade pendente;
-- produção: login ADMIN e COLLABORATOR, healthchecks, workflow completo, histórico, B2, OCR e três ações Gemini aprovados; a nova gestão de usuários e o ditado aguardam o rollout desta versão;
+- produção: login ADMIN e COLLABORATOR, healthchecks, workflow completo, histórico, B2, OCR, gestão completa de usuários e quatro ações Gemini aprovados;
 - segurança do repositório: nenhum secret real, arquivo `.env` ou chave privada encontrado.
 
 ## Credenciais de demonstração
