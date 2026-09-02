@@ -18,6 +18,7 @@ MVP concluído, publicado e auditado funcional e visualmente.
 - abstração FileStorage com implementações local e S3 compatível;
 - OCR híbrido para PDFs digitalizados, com Tesseract em português e inglês;
 - abstração de IA com provider Gemini;
+- respostas de revisão, resumo e comparação com IA em português do Brasil;
 - ditado com gravação de voz, normalização FFmpeg, transcrição e correção com Gemini;
 - dashboard, documentos, detalhe, criação, edição, histórico, comparação e usuários;
 - seed idempotente com dados profissionais;
@@ -52,7 +53,7 @@ MVP concluído, publicado e auditado funcional e visualmente.
 
 ## Testes
 
-- backend: 30 testes aprovados;
+- backend: 31 testes aprovados;
 - Ruff: aprovado;
 - frontend: 12 testes aprovados;
 - ESLint: aprovado;
