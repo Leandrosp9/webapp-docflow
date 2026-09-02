@@ -11,23 +11,26 @@ class AIService:
 
     def review(self, title: str, content: str) -> str:
         return self.provider.generate(
-            "Review this business document. Respond in concise Markdown with exactly these "
-            "sections: Summary, Problems found, Confusing points, Improvement suggestions, "
-            f"Ambiguity risks. Never rewrite automatically.\n\nTitle: {title}\n\n{content}"
+            "Revise este documento empresarial. Responda sempre em português do Brasil, em "
+            "Markdown conciso, com exatamente estas seções: Resumo, Problemas encontrados, "
+            "Pontos confusos, Sugestões de melhoria e Riscos de ambiguidade. Não reescreva o "
+            f"documento automaticamente.\n\nTítulo: {title}\n\n{content}"
         )
 
     def summarize(self, title: str, content: str) -> str:
         return self.provider.generate(
-            "Write an objective business summary in at most 120 words. Do not invent facts."
-            f"\n\nTitle: {title}\n\n{content}"
+            "Escreva um resumo empresarial objetivo, sempre em português do Brasil e com no "
+            "máximo 120 palavras. Não invente fatos."
+            f"\n\nTítulo: {title}\n\n{content}"
         )
 
     def compare(self, title: str, old: str, new: str, raw_diff: list[str]) -> str:
         formatted_diff = "\n".join(raw_diff)
         return self.provider.generate(
-            "Explain the changes between two versions of a business document. Use concise "
-            "Markdown sections: Added, Removed, Changed, Probable impact. Base the answer only "
-            f"on the supplied text and diff.\n\nTitle: {title}\n\nOLD:\n{old}\n\nNEW:\n{new}"
+            "Explique as diferenças entre duas versões de um documento empresarial. Responda "
+            "sempre em português do Brasil e use estas seções concisas em Markdown: Adicionado, "
+            "Removido, Alterado e Impacto provável. Baseie a resposta somente nos textos e no "
+            f"diff fornecidos.\n\nTítulo: {title}\n\nANTERIOR:\n{old}\n\nNOVA:\n{new}"
             f"\n\nDIFF:\n{formatted_diff}"
         )
 

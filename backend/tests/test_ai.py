@@ -1,4 +1,5 @@
-from app.ai.service import get_ai_service
+from app.ai.base import AIProvider
+from app.ai.service import AIService, get_ai_service
 from app.main import app
 from app.services.audio import AudioProcessingError, get_audio_transcoder
 
@@ -28,6 +29,33 @@ class FakeAudioTranscoder:
 class FailingAudioTranscoder:
     def to_wav(self, audio):
         raise AudioProcessingError("The uploaded audio is invalid")
+
+
+class CapturingProvider(AIProvider):
+    def __init__(self):
+        self.prompts = []
+
+    def generate(self, prompt):
+        self.prompts.append(prompt)
+        return "Resposta em português."
+
+    def generate_with_audio(self, prompt, audio, mime_type):
+        self.prompts.append(prompt)
+        return "Transcrição em português."
+
+
+def test_ai_prompts_require_brazilian_portuguese():
+    provider = CapturingProvider()
+    service = AIService(provider)
+
+    service.review("Política", "Conteúdo")
+    service.summarize("Política", "Conteúdo")
+    service.compare("Política", "Anterior", "Nova", ["+ alteração"])
+
+    assert len(provider.prompts) == 3
+    assert all("português do Brasil" in prompt for prompt in provider.prompts)
+    assert "Problemas encontrados" in provider.prompts[0]
+    assert "Impacto provável" in provider.prompts[2]
 
 
 def test_ai_service_is_mocked_and_summary_is_saved(client, admin_headers, create_document):
