@@ -1,15 +1,32 @@
 # DocFlow
 
 [![CI](https://github.com/Leandrosp9/webapp-docflow/actions/workflows/ci.yml/badge.svg)](https://github.com/Leandrosp9/webapp-docflow/actions/workflows/ci.yml)
+[![Demo online](https://img.shields.io/badge/demo-online-22c55e.svg)](https://docflow-saas.pages.dev)
 [![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-7c6cff.svg)](LICENSE)
 
-> Plataforma empresarial para gestão, revisão, aprovação e versionamento de documentos.
+> SaaS multi-tenant para gestão, revisão, aprovação e versionamento de documentos empresariais.
+
+**[Acessar demonstração](https://docflow-saas.pages.dev)** · **[Explorar API](https://http--api--52lxxtkxp7c5.code.run/docs)** · **[Ver arquitetura](#arquitetura)** · **[Executar localmente](#executando-localmente)**
+
+![Dashboard do DocFlow](docs/screenshots/dashboard.png)
 
 ## Visão geral
 
-O DocFlow é um SaaS multi-tenant de aprovação documental criado como um MVP enxuto e funcional. Ele centraliza documentos de texto e PDF, define uma versão oficial, organiza revisões formais e preserva uma trilha completa das decisões.
+O DocFlow centraliza documentos de texto e PDF, define uma versão oficial, organiza revisões formais e preserva uma trilha auditável das decisões. O projeto foi construído como um MVP enxuto para resolver uma dor empresarial real sem criar complexidade artificial.
 
-O projeto demonstra uma aplicação full-stack pronta para portfólio, conversas com clientes e evolução futura sem transformar o MVP em um sistema empresarial excessivamente grande.
+Além do produto visível, o repositório demonstra decisões de engenharia aplicáveis a projetos comerciais: isolamento multi-tenant, RBAC no backend, workflow de domínio, migrations, abstrações para IA e arquivos, testes automatizados e implantação em nuvem.
+
+## Destaques de engenharia
+
+| Área        | Implementação                                                                         |
+| ----------- | ------------------------------------------------------------------------------------- |
+| Arquitetura | React em JavaScript, FastAPI, camadas de serviço/repositório e API versionada         |
+| Segurança   | JWT com refresh token, Argon2, RBAC, isolamento por empresa e downloads autenticados  |
+| Domínio     | transições de estado validadas, versões imutáveis, comentários e auditoria completa   |
+| Documentos  | conteúdo textual, PDF privado, extração nativa e OCR seletivo para digitalizados      |
+| IA          | Gemini encapsulado no backend para revisão, resumo, comparação e ditado assistido     |
+| Qualidade   | 31 testes backend, 12 testes frontend e 7 cenários Playwright responsivos             |
+| Operação    | PostgreSQL, Alembic, Docker Compose, healthchecks, GitHub Actions e logs estruturados |
 
 ## O problema
 
@@ -111,29 +128,33 @@ PostgreSQL + Alembic
 ```
 
 ```text
-backend/app/
-├── api/            # routers e dependências HTTP
-├── core/           # configuração, segurança, erros e logs
-├── models/         # entidades SQLAlchemy
-├── schemas/        # contratos Pydantic
-├── repositories/   # acesso a dados com escopo de tenant
-├── services/       # regras de negócio e transições
-├── ai/             # abstração e provider Gemini
-├── storage/        # abstração e implementação de arquivos
-└── middleware/     # request ID e observabilidade
+webapp-docflow/
+├── backend/
+│   ├── app/
+│   │   ├── api/            # routers e dependências HTTP
+│   │   ├── core/           # configuração, segurança, erros e logs
+│   │   ├── models/         # entidades SQLAlchemy
+│   │   ├── schemas/        # contratos Pydantic
+│   │   ├── repositories/   # consultas com escopo de tenant
+│   │   ├── services/       # regras de negócio e workflow
+│   │   ├── ai/             # abstração e provider Gemini
+│   │   └── storage/        # arquivos locais ou S3 compatível
+│   ├── migrations/         # migrations Alembic
+│   └── tests/              # testes pytest
+├── frontend/
+│   ├── src/                # aplicação React em JavaScript
+│   └── tests/e2e/          # fluxos Playwright
+├── docs/                   # hospedagem e capturas verificadas
+└── .github/workflows/      # integração contínua
 ```
 
 ## Capturas de tela
-
-### Dashboard
-
-![Dashboard do DocFlow](docs/screenshots/dashboard.png)
 
 ### Detalhes do documento
 
 ![Detalhes e histórico de um documento no DocFlow](docs/screenshots/documento.png)
 
-As capturas acima foram geradas automaticamente a partir do ambiente Docker validado com `npm run screenshots`.
+As capturas acima foram geradas automaticamente a partir da demonstração publicada com `PLAYWRIGHT_BASE_URL=https://docflow-saas.pages.dev npm run screenshots`.
 
 ## Demonstração
 
@@ -145,10 +166,10 @@ Ambiente público:
 
 Empresa: **NovaTech Solutions**
 
-| Perfil | E-mail | Senha |
-| --- | --- | --- |
-| Administrador | `admin@docflow.demo` | `DocFlowDemo2026!` |
-| Colaborador | `collaborator@docflow.demo` | `DocFlowDemo2026!` |
+| Perfil        | E-mail                      | Senha              |
+| ------------- | --------------------------- | ------------------ |
+| Administrador | `admin@docflow.demo`        | `DocFlowDemo2026!` |
+| Colaborador   | `collaborator@docflow.demo` | `DocFlowDemo2026!` |
 
 O seed inclui seis documentos profissionais em diferentes estados, versões e eventos de histórico. A demonstração pública usa Neon, armazenamento privado Backblaze B2 e Gemini 3.6 Flash no backend.
 
@@ -202,34 +223,34 @@ O ambiente público usa Cloudflare Pages, Northflank, Neon e Backblaze B2. A ord
 
 Copie [`.env.example`](.env.example) para `.env` e substitua apenas valores locais. O arquivo `.env` é ignorado pelo Git.
 
-| Variável | Uso |
-| --- | --- |
-| `DATABASE_URL` | conexão SQLAlchemy com PostgreSQL |
-| `JWT_SECRET` | assinatura dos access tokens |
-| `API_DOCS_ENABLED` | habilita ou desabilita o Swagger em `/docs` |
-| `ACCESS_TOKEN_MINUTES` | duração do access token |
-| `REFRESH_TOKEN_DAYS` | duração do refresh token |
-| `GEMINI_API_KEY` | chave opcional da API Gemini |
-| `GEMINI_MODEL` | modelo Gemini usado pelo provider |
-| `CORS_ORIGINS` | origens autorizadas, separadas por vírgula |
-| `MAX_UPLOAD_MB` | limite de PDF |
-| `MAX_AUDIO_MB` | limite do áudio enviado para transcrição |
-| `MAX_AUDIO_SECONDS` | duração máxima do ditado em segundos |
-| `FILE_STORAGE_PROVIDER` | `local`, `s3`, `b2` ou `r2` |
-| `S3_ENDPOINT_URL` | endpoint do armazenamento compatível com S3 |
-| `S3_BUCKET` | bucket privado de PDFs |
-| `S3_REGION` | região do bucket |
-| `S3_ACCESS_KEY_ID` | identificador da credencial do bucket |
-| `S3_SECRET_ACCESS_KEY` | segredo da credencial do bucket |
-| `S3_PREFIX` | prefixo isolado dos objetos do DocFlow |
-| `PDF_MAX_PAGES` | máximo de páginas aceitas pela extração textual |
-| `OCR_ENABLED` | habilita OCR seletivo em PDFs digitalizados |
-| `OCR_LANGUAGES` | idiomas do Tesseract, por padrão `por+eng` |
-| `OCR_DPI` | resolução usada no OCR |
-| `OCR_MAX_PAGES` | máximo de páginas processadas por OCR em uma requisição |
-| `VITE_API_URL` | base pública da API usada pelo frontend |
-| `BACKEND_PORT` | porta local exposta pela API no Compose |
-| `FRONTEND_PORT` | porta local exposta pelo frontend no Compose |
+| Variável                | Uso                                                     |
+| ----------------------- | ------------------------------------------------------- |
+| `DATABASE_URL`          | conexão SQLAlchemy com PostgreSQL                       |
+| `JWT_SECRET`            | assinatura dos access tokens                            |
+| `API_DOCS_ENABLED`      | habilita ou desabilita o Swagger em `/docs`             |
+| `ACCESS_TOKEN_MINUTES`  | duração do access token                                 |
+| `REFRESH_TOKEN_DAYS`    | duração do refresh token                                |
+| `GEMINI_API_KEY`        | chave opcional da API Gemini                            |
+| `GEMINI_MODEL`          | modelo Gemini usado pelo provider                       |
+| `CORS_ORIGINS`          | origens autorizadas, separadas por vírgula              |
+| `MAX_UPLOAD_MB`         | limite de PDF                                           |
+| `MAX_AUDIO_MB`          | limite do áudio enviado para transcrição                |
+| `MAX_AUDIO_SECONDS`     | duração máxima do ditado em segundos                    |
+| `FILE_STORAGE_PROVIDER` | `local`, `s3`, `b2` ou `r2`                             |
+| `S3_ENDPOINT_URL`       | endpoint do armazenamento compatível com S3             |
+| `S3_BUCKET`             | bucket privado de PDFs                                  |
+| `S3_REGION`             | região do bucket                                        |
+| `S3_ACCESS_KEY_ID`      | identificador da credencial do bucket                   |
+| `S3_SECRET_ACCESS_KEY`  | segredo da credencial do bucket                         |
+| `S3_PREFIX`             | prefixo isolado dos objetos do DocFlow                  |
+| `PDF_MAX_PAGES`         | máximo de páginas aceitas pela extração textual         |
+| `OCR_ENABLED`           | habilita OCR seletivo em PDFs digitalizados             |
+| `OCR_LANGUAGES`         | idiomas do Tesseract, por padrão `por+eng`              |
+| `OCR_DPI`               | resolução usada no OCR                                  |
+| `OCR_MAX_PAGES`         | máximo de páginas processadas por OCR em uma requisição |
+| `VITE_API_URL`          | base pública da API usada pelo frontend                 |
+| `BACKEND_PORT`          | porta local exposta pela API no Compose                 |
+| `FRONTEND_PORT`         | porta local exposta pelo frontend no Compose            |
 
 O `docker-compose.yml` possui valores locais de demonstração, não credenciais de produção. Em produção, injete todos os segredos por um gerenciador apropriado.
 
@@ -301,3 +322,5 @@ Esses itens são ideias futuras e não fazem parte do MVP atual.
 ## Licença
 
 Distribuído sob a [Licença MIT](LICENSE).
+
+Contribuições devem seguir o guia em [CONTRIBUTING.md](CONTRIBUTING.md). Vulnerabilidades devem ser comunicadas conforme [SECURITY.md](SECURITY.md), nunca em uma issue pública.

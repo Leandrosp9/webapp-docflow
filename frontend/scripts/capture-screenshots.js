@@ -25,7 +25,13 @@ try {
   await page.goto(`${baseURL}/documents`)
   await page.getByRole('heading', { name: 'Biblioteca de documentos' }).waitFor()
   await page.getByPlaceholder('Buscar por título…').fill('Política de Segurança da Informação')
-  await page.getByText('Política de Segurança da Informação', { exact: true }).first().click()
+  await page
+    .locator('tr:visible', { hasText: 'Política de Segurança da Informação' })
+    .filter({ hasText: 'Publicado' })
+    .first()
+    .locator('a[href^="/documents/"]')
+    .first()
+    .click()
   await page.getByRole('heading', { name: 'Política de Segurança da Informação' }).waitFor()
   await page.screenshot({ path: `${outputDirectory}/documento.png`, fullPage: true })
 } finally {
