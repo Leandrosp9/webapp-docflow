@@ -323,4 +323,4 @@ Esses itens são ideias futuras e não fazem parte do MVP atual.
 
 Distribuído sob a [Licença MIT](LICENSE).
 
-Contribuições devem seguir o guia em [CONTRIBUTING.md](CONTRIBUTING.md). Vulnerabilidades devem ser comunicadas conforme [SECURITY.md](SECURITY.md), nunca em uma issue pública.
+Contribuições devem seguir o [guia de contribuição](.github/CONTRIBUTING.md). Vulnerabilidades devem ser comunicadas conforme a [política de segurança](.github/SECURITY.md), nunca em uma issue pública.

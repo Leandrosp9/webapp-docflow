@@ -2,7 +2,7 @@
 
 ## Fase atual
 
-MVP concluído, publicado e auditado funcional e visualmente.
+MVP v1.0.0 concluído, publicado e auditado funcional e visualmente.
 
 ## Concluído
 
