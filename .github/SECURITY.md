@@ -2,7 +2,7 @@
 
 ## Versão suportada
 
-O DocFlow é um projeto de portfólio e demonstração. A branch `main` representa a única versão mantida e recebe correções de segurança.
+O DocFlow é um projeto de portfólio e demonstração. Somente a branch `main` é mantida e recebe correções de segurança.
 
 ## Como reportar uma vulnerabilidade
 

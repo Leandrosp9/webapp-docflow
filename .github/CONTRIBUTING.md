@@ -35,7 +35,7 @@ Mudanças no banco devem incluir migration Alembic. Mudanças de comportamento d
 - escreva commits curtos e coerentes em português;
 - explique problema, solução e forma de validação na pull request;
 - mantenha a alteração dentro do escopo do MVP;
-- atualize README ou `PROJECT_STATUS.md` quando o comportamento público mudar;
+- atualize o README ou [`docs/PROJECT_STATUS.md`](../docs/PROJECT_STATUS.md) quando o comportamento público mudar;
 - aguarde todos os jobs do GitHub Actions antes do merge.
 
-Ao contribuir, você concorda que sua alteração será distribuída sob a [Licença MIT](LICENSE).
+Ao contribuir, você concorda que sua alteração será distribuída sob a [Licença MIT](../LICENSE).
